@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KIPP Soccer Program — Internal Overview</title>
+<style>
+  :root {
+    --navy: #1a2744;
+    --dark-navy: #0f1a2e;
+    --kipp-blue: #2d6bc4;
+    --kipp-orange: #f5a623;
+    --green: #2ecc71;
+    --light-bg: #f8f9fb;
+    --card-bg: #ffffff;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --border: #e8ecf1;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    background: var(--light-bg);
+    line-height: 1.6;
+  }
+
+  /* Navigation */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--navy);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  nav .logo {
+    color: white; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px;
+  }
+  nav .logo span { color: var(--kipp-orange); }
+  nav ul { list-style: none; display: flex; gap: 0.25rem; }
+  nav a {
+    color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.85rem;
+    padding: 0.5rem 0.9rem; border-radius: 6px; transition: all 0.2s;
+  }
+  nav a:hover, nav a.active { color: white; background: rgba(255,255,255,0.1); }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--dark-navy) 100%);
+    padding: 7rem 2rem 4rem;
+    text-align: center; color: white;
+  }
+  .hero h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 0.75rem; }
+  .hero h1 span { color: var(--kipp-orange); }
+  .hero p { font-size: 1.15rem; color: rgba(255,255,255,0.7); max-width: 650px; margin: 0 auto 2rem; }
+  .hero-stats {
+    display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; margin-top: 1.5rem;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat .number { font-size: 2.5rem; font-weight: 800; color: var(--kipp-orange); }
+  .hero-stat .label { font-size: 0.85rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Sections */
+  .section { padding: 4rem 2rem; max-width: 1100px; margin: 0 auto; }
+  .section-header {
+    text-align: center; margin-bottom: 3rem;
+  }
+  .section-header h2 {
+    font-size: 2rem; font-weight: 700; color: var(--navy); margin-bottom: 0.5rem;
+  }
+  .section-header p { color: var(--text-light); font-size: 1.05rem; max-width: 600px; margin: 0 auto; }
+
+  .section-dark {
+    background: var(--navy); color: white; padding: 4rem 2rem;
+  }
+  .section-dark .section-header h2 { color: white; }
+  .section-dark .section-header p { color: rgba(255,255,255,0.6); }
+
+  /* Cards */
+  .card-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;
+  }
+  .card {
+    background: var(--card-bg); border-radius: 12px; padding: 1.75rem;
+    border: 1px solid var(--border);
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  .card-icon {
+    width: 48px; height: 48px; border-radius: 10px; display: flex;
+    align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem;
+  }
+  .card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--navy); }
+  .card p { color: var(--text-light); font-size: 0.95rem; }
+
+  /* Dark cards */
+  .card-dark {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 1.75rem;
+  }
+  .card-dark h3 { color: white; font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .card-dark p { color: rgba(255,255,255,0.65); font-size: 0.95rem; }
+
+  /* Pipeline / Timeline */
+  .pipeline {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;
+  }
+  .stage {
+    background: var(--card-bg); border-radius: 12px; padding: 1.75rem;
+    border-left: 4px solid var(--kipp-blue); border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  }
+  .stage.active { border-left-color: var(--green); }
+  .stage.future { border-left-color: var(--kipp-orange); }
+  .stage-badge {
+    display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; padding: 0.2rem 0.6rem; border-radius: 4px; margin-bottom: 0.75rem;
+  }
+  .stage.active .stage-badge { background: #e8f8ef; color: #27ae60; }
+  .stage .stage-badge { background: #e8f0fe; color: var(--kipp-blue); }
+  .stage.future .stage-badge { background: #fef5e7; color: #e67e22; }
+  .stage h3 { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 0.5rem; }
+  .stage p { color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem; }
+  .stage ul { list-style: none; padding: 0; }
+  .stage li {
+    font-size: 0.88rem; color: var(--text); padding: 0.3rem 0;
+    padding-left: 1.25rem; position: relative;
+  }
+  .stage li::before {
+    content: ''; position: absolute; left: 0; top: 0.65rem;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--kipp-blue);
+  }
+  .stage.active li::before { background: var(--green); }
+  .stage.future li::before { background: var(--kipp-orange); }
+
+  /* K-12 Pathway */
+  .pathway { display: flex; flex-direction: column; gap: 1rem; }
+  .pathway-row {
+    display: grid; grid-template-columns: 140px 1fr; gap: 1.5rem; align-items: start;
+    background: var(--card-bg); border-radius: 12px; padding: 1.5rem;
+    border: 1px solid var(--border);
+  }
+  .pathway-grade {
+    font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    color: white; padding: 0.6rem 1rem; border-radius: 8px; text-align: center;
+  }
+  .pathway-content h3 { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 0.35rem; }
+  .pathway-content p { color: var(--text-light); font-size: 0.9rem; }
+
+  /* Etienne profile */
+  .profile-section {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 1100px; margin: 0 auto;
+  }
+  .profile-card {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 2rem; text-align: center;
+  }
+  .profile-avatar {
+    width: 80px; height: 80px; border-radius: 50%; background: var(--kipp-orange);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; margin: 0 auto 1rem; color: white;
+  }
+  .profile-card h3 { color: white; font-size: 1.2rem; margin-bottom: 0.25rem; }
+  .profile-card .role { color: var(--kipp-orange); font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; }
+  .profile-card p { color: rgba(255,255,255,0.65); font-size: 0.9rem; text-align: left; }
+
+  /* Services list */
+  .services-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;
+    max-width: 1100px; margin: 2rem auto 0;
+  }
+  .service-item {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 1.25rem; text-align: center;
+  }
+  .service-item .service-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .service-item h4 { color: white; font-size: 0.95rem; margin-bottom: 0.3rem; }
+  .service-item p { color: rgba(255,255,255,0.5); font-size: 0.8rem; }
+
+  /* Budget */
+  .budget-table {
+    width: 100%; border-collapse: collapse; background: var(--card-bg);
+    border-radius: 12px; overflow: hidden; border: 1px solid var(--border);
+  }
+  .budget-table th {
+    background: var(--navy); color: white; padding: 0.9rem 1.25rem;
+    text-align: left; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;
+  }
+  .budget-table td {
+    padding: 0.8rem 1.25rem; border-bottom: 1px solid var(--border); font-size: 0.92rem;
+  }
+  .budget-table tr:last-child td { border-bottom: none; }
+  .budget-table .total td { font-weight: 700; background: #f0f4f8; }
+
+  /* Key partners */
+  .partner-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;
+  }
+  .partner {
+    background: var(--card-bg); border-radius: 10px; padding: 1.25rem;
+    border: 1px solid var(--border); text-align: center;
+  }
+  .partner h4 { font-size: 0.95rem; font-weight: 700; color: var(--navy); margin-bottom: 0.3rem; }
+  .partner p { font-size: 0.82rem; color: var(--text-light); }
+
+  /* Footer */
+  footer {
+    background: var(--dark-navy); color: rgba(255,255,255,0.4);
+    text-align: center; padding: 2rem; font-size: 0.8rem;
+  }
+
+  /* Page sections */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Responsive */
+  .menu-toggle {
+    display: none; background: none; border: none; color: white;
+    font-size: 1.5rem; cursor: pointer; padding: 0.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .menu-toggle { display: block; }
+    nav { flex-wrap: wrap; height: auto; padding: 0.75rem 1.5rem; }
+    nav ul {
+      display: none; flex-direction: column; width: 100%;
+      padding: 0.5rem 0; gap: 0;
+    }
+    nav ul.open { display: flex; }
+    nav a { display: block; padding: 0.6rem 0.5rem; }
+    .hero h1 { font-size: 2rem; }
+    .hero-stats { gap: 1.5rem; }
+    .profile-section { grid-template-columns: 1fr; }
+    .pathway-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">KIPP <span>SOCCER</span></div>
+  <button class="menu-toggle" onclick="document.querySelector('nav ul').classList.toggle('open')">&#9776;</button>
+  <ul>
+    <li><a href="#" onclick="showPage('home')" class="active" id="nav-home">Overview</a></li>
+    <li><a href="#" onclick="showPage('pathway')" id="nav-pathway">K-12 Pathway</a></li>
+    <li><a href="#" onclick="showPage('partnerships')" id="nav-partnerships">Partnerships</a></li>
+  </ul>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+
+  <div class="hero">
+    <h1>Every Kid Deserves <span>a Team</span></h1>
+    <p>A free K-12 soccer program for KIPP NJ students across Newark, Paterson, and Camden — building a model for how public schools can upend pay-to-play.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="number">19</div>
+        <div class="label">Campuses</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number">7,000+</div>
+        <div class="label">Students</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number">3</div>
+        <div class="label">Cities</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number">K-12</div>
+        <div class="label">Pipeline</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Why Soccer, Why Now</h2>
+      <p>The talent is here. The infrastructure to develop it has not been.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon" style="background: #e8f0fe;">&#9917;</div>
+        <h3>Deep Community Roots</h3>
+        <p>Newark, Paterson, and Camden are home to large Latino, Brazilian, Haitian, and West African families for whom soccer is central to neighborhood life — and thousands more who would play if given early exposure.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="background: #fef5e7;">&#127942;</div>
+        <h3>World Cup 2026</h3>
+        <p>The World Cup is at MetLife Stadium — in our backyard. A once-in-a-generation moment to connect our students to the biggest sporting event on earth.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="background: #e8f8ef;">&#128200;</div>
+        <h3>Proven Impact on Kids</h3>
+        <p>Studies show student-athletes have higher proficiency scores and stronger mental health.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="background: #f0e8fe;">&#128241;</div>
+        <h3>Productive After-School Time</h3>
+        <p>Kids need somewhere to go after school. Soccer gets them off their phones and into structured, team-based programs where they're moving, competing, and building relationships with adults and peers.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="background: #fde8e8;">&#128176;</div>
+        <h3>Upending Pay-to-Play</h3>
+        <p>Competitive youth soccer costs thousands of dollars a year, making it inaccessible to most kids in our communities.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="background: #e8f8f0;">&#128640;</div>
+        <h3>A Replicable Model</h3>
+        <p>If this works, it's a proof of concept for how any public school system can build elite athletic pathways for low-income students.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Program Phasing</h2>
+      <p>Three stages from pilot to full-scale academy.</p>
+    </div>
+    <div class="pipeline">
+      <div class="stage active">
+        <div class="stage-badge">Stage 1 — Active</div>
+        <h3>Paterson Pilot</h3>
+        <p>Spring 2026</p>
+        <ul>
+          <li>2 schools, ~250 kids</li>
+          <li>Rec soccer at ES and MS levels</li>
+          <li>CSAL middle school team</li>
+          <li>Katie Ibeh running ops</li>
+          <li>Etiennes involved in coaching</li>
+        </ul>
+      </div>
+      <div class="stage">
+        <div class="stage-badge">Stage 2 — Planned</div>
+        <h3>Opt-In Expansion</h3>
+        <p>2026-27 School Year</p>
+        <ul>
+          <li>ES rec soccer + MS CSAL teams across Newark & Paterson</li>
+          <li>Schools opt in initially, mandatory the following year</li>
+          <li>Combined high school teams in Newark</li>
+        </ul>
+      </div>
+      <div class="stage future">
+        <div class="stage-badge">Stage 3 — Funding-Dependent</div>
+        <h3>Academy / Club Launch</h3>
+        <p>TBD</p>
+        <ul>
+          <li>Year-round club teams, best players across all schools</li>
+          <li>22 teams, 350-400 players at full scale</li>
+          <li>Network Director of Soccer hired</li>
+          <li>Separate 501(c)(3) for KIPP Soccer Academy</li>
+          <li>EDP Premier, State Cup, national showcases</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- K-12 PATHWAY PAGE -->
+<div class="page" id="page-pathway">
+  <div class="hero" style="padding-bottom: 3rem;">
+    <h1>The K-12 <span>Pathway</span></h1>
+    <p>A child entering any KIPP school in kindergarten has access to soccer programming every year through graduation. The pathway serves every student — not just future varsity players.</p>
+  </div>
+
+  <div class="section">
+    <div class="pathway">
+      <div class="pathway-row">
+        <div class="pathway-grade" style="background: #2ecc71;">K-2</div>
+        <div class="pathway-content">
+          <h3>Foundation & Love of the Game</h3>
+          <p>Soccer integrated into PE 2 days/week. After-school clubs 2 days/week. Small-sided games (3v3, 4v4), no positions, no tactics, all fun. Every participant gets a ball to take home. Target: 60%+ student participation.</p>
+        </div>
+      </div>
+      <div class="pathway-row">
+        <div class="pathway-grade" style="background: #27ae60;">Grades 3-4</div>
+        <div class="pathway-content">
+          <h3>Skill Building & Identification</h3>
+          <p>After-school clubs expand to 3 days/week. Intramural leagues with quarterly tournaments. 5v5 and 7v7 formats. Talent identification begins — Etiennes conduct quarterly player ID sessions across all campuses. Top players invited to academy development sessions.</p>
+        </div>
+      </div>
+      <div class="pathway-row">
+        <div class="pathway-grade" style="background: var(--kipp-blue);">Grades 6-8</div>
+        <div class="pathway-content">
+          <h3>Competition & System Installation</h3>
+          <p>All KIPP middle schools field boys' and girls' teams. Training 3-4x/week + 1-2 games/week. Unified playing style installed — same formation, same philosophy, designed by the Etiennes. Winter futsal is a core development period. Open tryouts bring talented non-KIPP kids into the system.</p>
+        </div>
+      </div>
+      <div class="pathway-row">
+        <div class="pathway-grade" style="background: var(--navy);">Grades 9-12</div>
+        <div class="pathway-content">
+          <h3>Championship Pursuit & College Pipeline</h3>
+          <p>NJSIAA competition — Newark in North II (Group III), Camden in South Jersey. Combined teams bringing together NCA and Lab players with freshman, JV, and varsity squads. 5 training sessions/week in season. Hudl highlight film for every junior and senior. Target: 5+ college placements per graduating class by Year 5.</p>
+        </div>
+      </div>
+      <div class="pathway-row">
+        <div class="pathway-grade" style="background: var(--kipp-orange);">Academy</div>
+        <div class="pathway-content">
+          <h3>KIPP Soccer Academy (501(c)(3))</h3>
+          <p>Pulling top players from KIPP schools across Newark and Paterson. Year-round competitive training. EDP travel-league play (U8-U18). College showcases with 200+ coaches. Futsal in winter. Elite coaching from the Etiennes. Free for every student. Separate nonprofit structure. Scaling to 22 teams and 350-400 players by Year 4.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- PARTNERSHIPS PAGE -->
+<div class="page" id="page-partnerships">
+  <div class="hero" style="padding-bottom: 3rem;">
+    <h1>Key <span>Partnerships</span></h1>
+    <p>The organizations and people making this possible.</p>
+  </div>
+
+  <div class="section">
+    <div class="partner-grid">
+      <div class="partner">
+        <h4>US Soccer Federation</h4>
+        <p>Official partner. Nora Dooley + Madison Hafitz. Provided connections, advocacy, and credibility.</p>
+      </div>
+      <div class="partner">
+        <h4>US Soccer Foundation</h4>
+        <p>Mini-pitch at KIPP Purpose. Key funding gateway. Bruno Marchesi relationship.</p>
+      </div>
+      <div class="partner">
+        <h4>NY Cosmos</h4>
+        <p>Hinchliffe Stadium access. Game-day culture events. Cosmos B / USL Academy pathway. Etienne connection.</p>
+      </div>
+      <div class="partner">
+        <h4>Etienne Soccer School</h4>
+        <p>Co-builders of the program. Curriculum design, coach development, player ID, elite training, community ambassadorship.</p>
+      </div>
+      <div class="partner">
+        <h4>Common Goal</h4>
+        <p>CEO Mary Connor providing program design and messaging guidance. Grant proposal in process.</p>
+      </div>
+      <div class="partner">
+        <h4>NJ Youth Soccer</h4>
+        <p>Equipment donation. Breeana Cassidy + Evan Dabby. Cannot fund at scale but supportive.</p>
+      </div>
+      <div class="partner">
+        <h4>World Cup Host Committee</h4>
+        <p>Brady O'Connor. Potential corporate sponsor intros (Nike, Dick's). Phil Murphy connection.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-dark">
+    <div class="section-header">
+      <h2>The Etienne Family</h2>
+      <p>Co-builders of the KIPP Soccer Program. Not contractors — partners.</p>
+    </div>
+    <div class="profile-section">
+      <div class="profile-card">
+        <div class="profile-avatar">DE</div>
+        <h3>Derrick Etienne Sr.</h3>
+        <div class="role">Coach &bull; NY Cosmos</div>
+        <p>Former professional soccer player (Richmond Kickers, Long Island Rough Riders) and Haitian international. Co-founded the Etienne Soccer School of Excellence in 2009. Raised in Paterson, NJ. His name carries enormous weight in Paterson's Haitian and broader soccer communities.</p>
+      </div>
+      <div class="profile-card">
+        <div class="profile-avatar">DE</div>
+        <h3>Darrell Etienne Sr.</h3>
+        <div class="role">Head Coach, Cosmos B</div>
+        <p>Twin brother of Derrick. Same professional and international career. Currently serves as head coach of Cosmos B in the USL Academy League — at the intersection of the KIPP program and the Cosmos professional pathway.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>KIPP NJ & Miami Soccer Program — Internal Use Only — Updated March 2026</p>
+</footer>
+
+<script>
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page).classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+
+</body>
+</html>
