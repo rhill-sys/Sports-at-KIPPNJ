@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KIPP Sports Hub</title>
+<style>
+  :root {
+    --kipp-orange: #F26522;
+    --kipp-orange-light: #FFF3EC;
+    --kipp-orange-hover: #D9551A;
+    --kipp-dark: #1A1A2E;
+    --kipp-gray: #6B7280;
+    --kipp-light: #F9FAFB;
+    --kipp-border: #E5E7EB;
+    --kipp-green: #10B981;
+    --kipp-green-light: #ECFDF5;
+    --kipp-red: #EF4444;
+    --kipp-blue: #3B82F6;
+    --kipp-pink: #EC4899;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+    --radius: 8px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--kipp-light);
+    color: var(--kipp-dark);
+    line-height: 1.6;
+  }
+  #root { min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* Nav */
+  .nav {
+    background: white;
+    border-bottom: 1px solid var(--kipp-border);
+    padding: 0 24px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; height: 60px; gap: 24px;
+  }
+  .nav-brand {
+    font-weight: 700; font-size: 18px; color: var(--kipp-orange);
+    cursor: pointer; white-space: nowrap; user-select: none;
+  }
+  .nav-links { display: flex; gap: 2px; flex-wrap: wrap; }
+  .nav-link {
+    padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: 500;
+    color: var(--kipp-gray); cursor: pointer; border: none; background: none;
+    transition: all 0.15s; font-family: inherit;
+  }
+  .nav-link:hover { background: var(--kipp-orange-light); color: var(--kipp-orange); }
+  .nav-link.active { background: var(--kipp-orange-light); color: var(--kipp-orange); }
+  .nav-admin {
+    margin-left: auto; padding: 6px 14px; border-radius: 6px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--kipp-border); background: white; color: var(--kipp-gray);
+    transition: all 0.15s; font-family: inherit;
+  }
+  .nav-admin:hover { border-color: var(--kipp-orange); color: var(--kipp-orange); }
+  .nav-admin.unlocked { background: var(--kipp-orange); color: white; border-color: var(--kipp-orange); }
+
+  /* Layout */
+  .page { max-width: 1100px; margin: 0 auto; padding: 32px 24px; width: 100%; flex: 1; }
+  .page-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .page-subtitle { color: var(--kipp-gray); font-size: 15px; margin-bottom: 28px; }
+
+  /* Cards */
+  .card {
+    background: white; border: 1px solid var(--kipp-border);
+    border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm);
+  }
+
+  /* Overview hero */
+  .overview-hero {
+    background: linear-gradient(135deg, var(--kipp-orange) 0%, #E85D1A 100%);
+    color: white; border-radius: 12px; padding: 48px 40px; margin-bottom: 32px;
+  }
+  .overview-hero h1 { font-size: 36px; font-weight: 800; margin-bottom: 12px; }
+  .overview-hero p { font-size: 18px; opacity: 0.92; max-width: 600px; line-height: 1.7; }
+  .overview-link {
+    display: inline-block; margin-top: 24px; padding: 12px 28px;
+    background: white; color: var(--kipp-orange); font-weight: 700; font-size: 15px;
+    border-radius: 8px; text-decoration: none; transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .overview-link:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+  /* Stats */
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px; margin-bottom: 32px;
+  }
+  .stat-card { text-align: center; padding: 20px; }
+  .stat-number { font-size: 36px; font-weight: 800; color: var(--kipp-orange); }
+  .stat-label {
+    font-size: 12px; color: var(--kipp-gray); margin-top: 4px;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+
+  /* Schools grid */
+  .schools-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px;
+  }
+  .school-card { transition: box-shadow 0.15s; }
+  .school-card:hover { box-shadow: var(--shadow-md); }
+  .school-header {
+    display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;
+  }
+  .school-name { font-weight: 700; font-size: 16px; }
+  .school-city {
+    font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 99px;
+    background: var(--kipp-orange-light); color: var(--kipp-orange); white-space: nowrap;
+  }
+  .school-no-data { font-size: 14px; color: #9CA3AF; font-style: italic; }
+
+  /* Sport row inside school card */
+  .sport-row {
+    padding: 10px 0; border-top: 1px solid #F3F4F6;
+    display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;
+  }
+  .sport-row:first-child { border-top: none; }
+  .sport-name { font-weight: 600; font-size: 14px; }
+  .sport-meta { display: flex; gap: 12px; font-size: 13px; color: var(--kipp-gray); }
+  .sport-meta strong { color: var(--kipp-dark); }
+  .gender-bar {
+    height: 5px; border-radius: 3px; background: #E5E7EB;
+    margin-top: 4px; overflow: hidden; display: flex; grid-column: 1 / -1;
+  }
+  .gender-boys { background: var(--kipp-blue); height: 100%; transition: width 0.3s; }
+  .gender-girls { background: var(--kipp-pink); height: 100%; transition: width 0.3s; }
+  .school-total {
+    margin-top: 12px; padding-top: 10px; border-top: 2px solid var(--kipp-orange-light);
+    font-size: 14px; font-weight: 600; color: var(--kipp-dark);
+  }
+  .school-updated {
+    margin-top: 8px; font-size: 11px; color: #9CA3AF;
+  }
+
+  /* Filter bar */
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filter-btn {
+    padding: 6px 16px; border-radius: 99px; font-size: 13px; font-weight: 500;
+    cursor: pointer; border: 1px solid var(--kipp-border); background: white;
+    color: var(--kipp-gray); transition: all 0.15s; font-family: inherit;
+  }
+  .filter-btn:hover { border-color: var(--kipp-orange); color: var(--kipp-orange); }
+  .filter-btn.active { background: var(--kipp-orange); color: white; border-color: var(--kipp-orange); }
+
+  /* Updates */
+  .update-item { border-left: 3px solid var(--kipp-orange); padding: 20px 24px; margin-bottom: 16px; }
+  .update-meta {
+    font-size: 12px; color: var(--kipp-gray); margin-bottom: 6px;
+    display: flex; gap: 12px; align-items: center;
+  }
+  .update-title { font-weight: 700; font-size: 17px; margin-bottom: 8px; }
+  .update-content { font-size: 14px; color: #374151; white-space: pre-wrap; }
+
+  /* Forms */
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--kipp-dark); }
+  .form-hint { font-size: 12px; color: #9CA3AF; margin-top: 2px; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--kipp-border);
+    border-radius: 6px; font-size: 14px; font-family: inherit;
+    transition: border-color 0.15s; background: white;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none; border-color: var(--kipp-orange);
+    box-shadow: 0 0 0 3px rgba(242,101,34,0.1);
+  }
+  .form-textarea { resize: vertical; min-height: 100px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
+
+  /* Buttons */
+  .btn {
+    padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.15s; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--kipp-orange); color: white; }
+  .btn-primary:hover { background: var(--kipp-orange-hover); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary { background: white; color: var(--kipp-dark); border: 1px solid var(--kipp-border); }
+  .btn-secondary:hover { background: var(--kipp-light); }
+  .btn-danger { background: white; color: var(--kipp-red); border: 1px solid #FECACA; }
+  .btn-danger:hover { background: #FEF2F2; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-ghost { background: none; border: none; color: var(--kipp-gray); padding: 6px; cursor: pointer; }
+  .btn-ghost:hover { color: var(--kipp-red); }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; padding: 12px 20px;
+    border-radius: 8px; font-size: 14px; font-weight: 500; color: white;
+    z-index: 1000; animation: slideUp 0.3s; box-shadow: var(--shadow-md);
+  }
+  .toast-success { background: var(--kipp-green); }
+  .toast-error { background: var(--kipp-red); }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* Empty state */
+  .empty-state { text-align: center; padding: 48px 24px; color: var(--kipp-gray); }
+  .empty-state p { font-size: 15px; }
+
+  /* Submit form - sport entry rows */
+  .sport-entry {
+    background: var(--kipp-light); border: 1px solid var(--kipp-border);
+    border-radius: 8px; padding: 16px; margin-bottom: 12px;
+  }
+  .sport-entry-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+  }
+  .sport-entry-num {
+    font-size: 12px; font-weight: 700; color: var(--kipp-orange);
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .sport-entry-fields {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px;
+  }
+  .sport-entry-fields .form-input { background: white; }
+
+  /* Success state */
+  .success-box {
+    background: var(--kipp-green-light); border: 1px solid #A7F3D0;
+    border-radius: 12px; padding: 40px; text-align: center;
+  }
+  .success-check {
+    width: 56px; height: 56px; background: var(--kipp-green); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;
+    font-size: 28px; color: white;
+  }
+
+  /* Admin */
+  .admin-gate { max-width: 400px; margin: 80px auto; text-align: center; }
+  .admin-gate h2 { margin-bottom: 8px; }
+  .admin-gate p { color: var(--kipp-gray); font-size: 14px; margin-bottom: 24px; }
+  .admin-school-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid var(--kipp-border); font-size: 14px;
+  }
+  .admin-school-row:last-child { border-bottom: none; }
+
+  .loading-spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
+    border-radius: 50%; animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Loading bar */
+  .loading-bar {
+    position: fixed; top: 60px; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--kipp-orange), #F59E0B, var(--kipp-orange));
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .nav-inner { gap: 12px; }
+    .nav-links { gap: 0; }
+    .nav-link { padding: 8px 8px; font-size: 13px; }
+    .overview-hero { padding: 32px 24px; }
+    .overview-hero h1 { font-size: 26px; }
+    .form-row { grid-template-columns: 1fr; }
+    .schools-grid { grid-template-columns: 1fr; }
+    .sport-entry-fields { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useCallback } = React;
+
+// ============================================================
+// CONFIG — Replace this URL after deploying your Apps Script
+// ============================================================
+const API_URL = '';  // e.g. 'https://script.google.com/macros/s/ABC.../exec'
+
+// ============================================================
+// API Layer
+// ============================================================
+function apiGet(action) {
+  if (!API_URL) return Promise.resolve(null);
+  return fetch(`${API_URL}?action=${action}`).then(r => r.json());
+}
+
+function apiPost(data, password) {
+  if (!API_URL) return Promise.resolve(null);
+  return fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ ...data, ...(password ? { password } : {}) }),
+  }).then(r => r.json());
+}
+
+// ============================================================
+// Default school list (used as fallback when API isn't connected)
+// ============================================================
+const DEFAULT_SCHOOLS = [
+  // Miami
+  { Name: 'KIPP Royalty Academy', City: 'Miami', Level: 'Elementary' },
+  { Name: 'KIPP Courage Academy', City: 'Miami', Level: 'Middle' },
+  // Camden
+  { Name: 'KIPP Lanning Square Primary', City: 'Camden', Level: 'Elementary' },
+  { Name: 'KIPP Sumner Primary', City: 'Camden', Level: 'Elementary' },
+  { Name: 'KIPP Lanning Square Middle', City: 'Camden', Level: 'Middle' },
+  { Name: 'KIPP Hatch Middle', City: 'Camden', Level: 'Middle' },
+  { Name: 'KIPP High School', City: 'Camden', Level: 'High' },
+  // Paterson
+  { Name: 'KIPP Paterson Prep Elementary', City: 'Paterson', Level: 'Elementary' },
+  { Name: 'KIPP Paterson Prep Middle', City: 'Paterson', Level: 'Middle' },
+  // Newark
+  { Name: 'KIPP SPARK Academy', City: 'Newark', Level: 'Elementary' },
+  { Name: 'KIPP LIFE Academy', City: 'Newark', Level: 'Elementary' },
+  { Name: 'KIPP THRIVE Academy', City: 'Newark', Level: 'Elementary' },
+  { Name: 'KIPP Seek Academy', City: 'Newark', Level: 'Elementary' },
+  { Name: 'KIPP Upper Roseville Academy', City: 'Newark', Level: 'Elementary' },
+  { Name: 'KIPP TEAM Academy', City: 'Newark', Level: 'Middle' },
+  { Name: 'KIPP Rise Academy', City: 'Newark', Level: 'Middle' },
+  { Name: 'KIPP BOLD Academy', City: 'Newark', Level: 'Middle' },
+  { Name: 'KIPP Justice Academy', City: 'Newark', Level: 'Middle' },
+  { Name: 'KIPP Purpose Academy', City: 'Newark', Level: 'Middle' },
+  { Name: 'KIPP Newark Collegiate Academy', City: 'Newark', Level: 'High' },
+  { Name: 'KIPP Lab Academy', City: 'Newark', Level: 'High' },
+];
+
+// Group schools by city for dropdown rendering
+function schoolsByCity(schools) {
+  const cityOrder = ['Newark', 'Paterson', 'Camden', 'Miami'];
+  const grouped = {};
+  schools.forEach(s => {
+    if (!grouped[s.City]) grouped[s.City] = [];
+    grouped[s.City].push(s);
+  });
+  return cityOrder.filter(c => grouped[c]).map(c => ({ city: c, schools: grouped[c] }));
+}
+
+// ============================================================
+// Helpers
+// ============================================================
+function formatDate(ts) {
+  if (!ts) return '';
+  try {
+    return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch (e) { return String(ts); }
+}
+
+function groupSportsBySchool(schools, sportsData) {
+  const map = {};
+  schools.forEach(s => {
+    map[s.Name] = { ...s, sports: [], lastUpdated: null };
+  });
+  sportsData.forEach(sd => {
+    if (map[sd.School]) {
+      map[sd.School].sports.push(sd);
+      if (!map[sd.School].lastUpdated || sd.Timestamp > map[sd.School].lastUpdated) {
+        map[sd.School].lastUpdated = sd.Timestamp;
+      }
+    }
+  });
+  return Object.values(map);
+}
+
+// ============================================================
+// Toast
+// ============================================================
+function Toast({ message, type, onClose }) {
+  useEffect(() => { const t = setTimeout(onClose, 3500); return () => clearTimeout(t); }, []);
+  return <div className={`toast toast-${type}`}>{message}</div>;
+}
+
+// ============================================================
+// OVERVIEW PAGE
+// ============================================================
+function OverviewPage({ schoolsWithSports, updates }) {
+  const totalKids = schoolsWithSports.reduce((sum, s) =>
+    sum + s.sports.reduce((ss, sp) => ss + (parseInt(sp.Participants) || 0), 0), 0
+  );
+  const activeSchools = schoolsWithSports.filter(s => s.sports.length > 0).length;
+  const allSports = new Set(schoolsWithSports.flatMap(s => s.sports.map(sp => sp.Sport)));
+
+  return (
+    <div className="page">
+      <div className="overview-hero">
+        <h1>Sports at KIPP</h1>
+        <p>
+          Building a world-class athletic program across KIPP New Jersey — starting with soccer
+          in Paterson and expanding across Newark. Every kid deserves access to competitive sports,
+          great coaching, and the discipline and joy that comes with being part of a team.
+        </p>
+        <a href="https://rhill-sys.github.io/Sports-at-KIPPNJ/" target="_blank" rel="noopener" className="overview-link">
+          View Full Program Site &rarr;
+        </a>
+      </div>
+
+      <div className="stats-grid">
+        <div className="card stat-card">
+          <div className="stat-number">{schoolsWithSports.length}</div>
+          <div className="stat-label">Schools</div>
+        </div>
+        <div className="card stat-card">
+          <div className="stat-number">{activeSchools}</div>
+          <div className="stat-label">Reporting Sports</div>
+        </div>
+        <div className="card stat-card">
+          <div className="stat-number">{totalKids || '—'}</div>
+          <div className="stat-label">Participants</div>
+        </div>
+        <div className="card stat-card">
+          <div className="stat-number">{allSports.size || '—'}</div>
+          <div className="stat-label">Sports Offered</div>
+        </div>
+      </div>
+
+      {updates.length > 0 && (
+        <>
+          <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>Latest Update</h2>
+          <div className="card update-item" style={{ marginBottom: 0 }}>
+            <div className="update-meta">
+              <span>{formatDate(updates[0].Timestamp)}</span>
+              <span>{updates[0].Author}</span>
+            </div>
+            <div className="update-title">{updates[0].Title}</div>
+            <div className="update-content">{updates[0].Content}</div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// SCHOOLS PAGE
+// ============================================================
+function SchoolsPage({ schoolsWithSports }) {
+  const [filter, setFilter] = useState('All');
+  const cities = ['All', ...new Set(schoolsWithSports.map(s => s.City).filter(Boolean))];
+  const filtered = filter === 'All' ? schoolsWithSports : schoolsWithSports.filter(s => s.City === filter);
+
+  return (
+    <div className="page">
+      <h1 className="page-title">Our Schools</h1>
+      <p className="page-subtitle">After-school sports data across KIPP Newark and Paterson</p>
+
+      {cities.length > 2 && (
+        <div className="filter-bar">
+          {cities.map(c => (
+            <button key={c} className={`filter-btn ${filter === c ? 'active' : ''}`} onClick={() => setFilter(c)}>
+              {c}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="schools-grid">
+        {filtered.map((school, i) => {
+          const totalParts = school.sports.reduce((s, sp) => s + (parseInt(sp.Participants) || 0), 0);
+          return (
+            <div key={school.Name || i} className="card school-card">
+              <div className="school-header">
+                <div className="school-name">{school.Name}</div>
+                {school.City && <div className="school-city">{school.City}</div>}
+              </div>
+
+              {school.sports.length === 0 ? (
+                <div className="school-no-data">No sports data submitted yet</div>
+              ) : (
+                <>
+                  {school.sports.map((sp, j) => (
+                    <div key={j}>
+                      <div className="sport-row">
+                        <div>
+                          <div className="sport-name">{sp.Sport}</div>
+                          <div className="sport-meta">
+                            {sp.Participants && <span><strong>{sp.Participants}</strong> kids</span>}
+                            {sp.BoysPct && <span><strong>{sp.BoysPct}%</strong> boys</span>}
+                            {sp.GirlsPct && <span><strong>{sp.GirlsPct}%</strong> girls</span>}
+                          </div>
+                        </div>
+                      </div>
+                      {sp.BoysPct && sp.GirlsPct && (
+                        <div className="gender-bar">
+                          <div className="gender-boys" style={{ width: `${sp.BoysPct}%` }} />
+                          <div className="gender-girls" style={{ width: `${sp.GirlsPct}%` }} />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {school.sports.length > 1 && totalParts > 0 && (
+                    <div className="school-total">{totalParts} total participants</div>
+                  )}
+                  {school.lastUpdated && (
+                    <div className="school-updated">Last updated {formatDate(school.lastUpdated)}</div>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// SUBMIT DATA PAGE (for principals)
+// ============================================================
+const EMPTY_SPORT = { sport: '', participants: '', boysPct: '', girlsPct: '' };
+
+function SubmitPage({ schools, sportsData, onRefresh, showToast }) {
+  const [selectedSchool, setSelectedSchool] = useState('');
+  const [submitterName, setSubmitterName] = useState('');
+  const [sportEntries, setSportEntries] = useState([{ ...EMPTY_SPORT }]);
+  const [saving, setSaving] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  // Pre-fill if school already has data
+  useEffect(() => {
+    if (selectedSchool) {
+      const existing = sportsData.filter(sd => sd.School === selectedSchool);
+      if (existing.length > 0) {
+        setSportEntries(existing.map(sd => ({
+          sport: sd.Sport || '',
+          participants: sd.Participants || '',
+          boysPct: sd.BoysPct || '',
+          girlsPct: sd.GirlsPct || '',
+        })));
+      } else {
+        setSportEntries([{ ...EMPTY_SPORT }]);
+      }
+    }
+  }, [selectedSchool]);
+
+  const updateEntry = (idx, field, value) => {
+    const next = [...sportEntries];
+    next[idx] = { ...next[idx], [field]: value };
+    setSportEntries(next);
+  };
+
+  const addEntry = () => setSportEntries([...sportEntries, { ...EMPTY_SPORT }]);
+
+  const removeEntry = (idx) => {
+    if (sportEntries.length === 1) return;
+    setSportEntries(sportEntries.filter((_, i) => i !== idx));
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedSchool) return;
+    const validSports = sportEntries.filter(e => e.sport.trim());
+    if (validSports.length === 0) {
+      showToast('Add at least one sport', 'error');
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await apiPost({
+        action: 'submitSportsData',
+        school: selectedSchool,
+        sports: validSports,
+        submittedBy: submitterName,
+      });
+      if (res && res.success) {
+        setSubmitted(true);
+        onRefresh();
+      } else {
+        showToast(res?.error || 'Something went wrong', 'error');
+      }
+    } catch (e) {
+      showToast('Network error — check your connection', 'error');
+    }
+    setSaving(false);
+  };
+
+  const resetForm = () => {
+    setSelectedSchool('');
+    setSubmitterName('');
+    setSportEntries([{ ...EMPTY_SPORT }]);
+    setSubmitted(false);
+  };
+
+  if (submitted) {
+    return (
+      <div className="page">
+        <div className="success-box">
+          <div className="success-check">&#10003;</div>
+          <h2 style={{ fontSize: 22, marginBottom: 8 }}>Data submitted!</h2>
+          <p style={{ color: '#6B7280', marginBottom: 20 }}>
+            Sports data for <strong>{selectedSchool}</strong> has been recorded.
+          </p>
+          <button className="btn btn-primary" onClick={resetForm}>Submit for another school</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page">
+      <h1 className="page-title">Submit Sports Data</h1>
+      <p className="page-subtitle">
+        Principals and coaches: report which after-school sports your school offers,
+        roughly how many kids participate in each, and the approximate boy/girl breakdown.
+      </p>
+
+      <div className="card" style={{ maxWidth: 700 }}>
+        <div className="form-row" style={{ marginBottom: 20 }}>
+          <div className="form-group">
+            <label className="form-label">Your School</label>
+            <select className="form-select" value={selectedSchool} onChange={e => setSelectedSchool(e.target.value)}>
+              <option value="">Select your school...</option>
+              {schoolsByCity(schools).map(g => (
+                <optgroup key={g.city} label={g.city}>
+                  {g.schools.map(s => (
+                    <option key={s.Name} value={s.Name}>{s.Name}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Your Name</label>
+            <input
+              className="form-input"
+              value={submitterName}
+              onChange={e => setSubmitterName(e.target.value)}
+              placeholder="e.g. Ms. Johnson"
+            />
+          </div>
+        </div>
+
+        {selectedSchool && (
+          <>
+            <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>Sports Offered</h3>
+            <p className="form-hint" style={{ marginBottom: 16 }}>
+              Add each after-school sport. Participant numbers and percentages can be rough estimates.
+            </p>
+
+            {sportEntries.map((entry, idx) => (
+              <div key={idx} className="sport-entry">
+                <div className="sport-entry-header">
+                  <div className="sport-entry-num">Sport {idx + 1}</div>
+                  {sportEntries.length > 1 && (
+                    <button className="btn-ghost" onClick={() => removeEntry(idx)} title="Remove">&#10005;</button>
+                  )}
+                </div>
+                <div className="sport-entry-fields">
+                  <div>
+                    <label className="form-label">Sport Name</label>
+                    <input className="form-input" value={entry.sport}
+                      onChange={e => updateEntry(idx, 'sport', e.target.value)}
+                      placeholder="e.g. Soccer"
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">~Participants</label>
+                    <input className="form-input" type="number" min="0" value={entry.participants}
+                      onChange={e => updateEntry(idx, 'participants', e.target.value)}
+                      placeholder="e.g. 45"
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">~Boys %</label>
+                    <input className="form-input" type="number" min="0" max="100" value={entry.boysPct}
+                      onChange={e => updateEntry(idx, 'boysPct', e.target.value)}
+                      placeholder="e.g. 60"
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">~Girls %</label>
+                    <input className="form-input" type="number" min="0" max="100" value={entry.girlsPct}
+                      onChange={e => updateEntry(idx, 'girlsPct', e.target.value)}
+                      placeholder="e.g. 40"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+              <button className="btn btn-secondary" onClick={addEntry}>+ Add another sport</button>
+              <button
+                className="btn btn-primary"
+                onClick={handleSubmit}
+                disabled={saving || !selectedSchool || sportEntries.every(e => !e.sport.trim())}
+                style={{ marginLeft: 'auto' }}
+              >
+                {saving && <span className="loading-spinner" />}
+                Submit Data
+              </button>
+            </div>
+          </>
+        )}
+
+        {!selectedSchool && (
+          <div style={{ textAlign: 'center', padding: '32px 0', color: '#9CA3AF' }}>
+            Select your school above to get started.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// UPDATES PAGE
+// ============================================================
+function UpdatesPage({ updates }) {
+  return (
+    <div className="page">
+      <h1 className="page-title">Program Updates</h1>
+      <p className="page-subtitle">News and progress from across the KIPP sports program</p>
+
+      {updates.length === 0 ? (
+        <div className="empty-state card"><p>No updates yet. Check back soon!</p></div>
+      ) : (
+        updates.map((u, i) => (
+          <div key={u.ID || i} className="card update-item">
+            <div className="update-meta">
+              <span>{formatDate(u.Timestamp)}</span>
+              <span>{u.Author}</span>
+            </div>
+            <div className="update-title">{u.Title}</div>
+            <div className="update-content">{u.Content}</div>
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// ADMIN PAGE
+// ============================================================
+function AdminPage({ schools, updates, sportsData, adminPassword, onRefresh, showToast }) {
+  const [tab, setTab] = useState('postUpdate');
+  const [saving, setSaving] = useState(false);
+
+  // Update form
+  const [uTitle, setUTitle] = useState('');
+  const [uContent, setUContent] = useState('');
+  const [uAuthor, setUAuthor] = useState('Ryan Hill');
+
+  // Add school form
+  const [newSchoolName, setNewSchoolName] = useState('');
+  const [newSchoolCity, setNewSchoolCity] = useState('Newark');
+
+  // API URL management
+  const [showApiField, setShowApiField] = useState(false);
+  const [tempApiUrl, setTempApiUrl] = useState(API_URL || '');
+
+  const handlePostUpdate = async () => {
+    if (!uTitle.trim() || !uContent.trim()) return;
+    setSaving(true);
+    try {
+      const res = await apiPost({ action: 'addUpdate', update: { Title: uTitle, Content: uContent, Author: uAuthor } }, adminPassword);
+      if (res?.success) {
+        showToast('Update posted!', 'success');
+        setUTitle(''); setUContent('');
+        onRefresh();
+      } else showToast(res?.error || 'Failed', 'error');
+    } catch (e) { showToast('Network error', 'error'); }
+    setSaving(false);
+  };
+
+  const handleDeleteUpdate = async (id) => {
+    if (!confirm('Delete this update?')) return;
+    setSaving(true);
+    try {
+      const res = await apiPost({ action: 'deleteUpdate', updateId: id }, adminPassword);
+      if (res?.success) { showToast('Deleted', 'success'); onRefresh(); }
+      else showToast(res?.error || 'Failed', 'error');
+    } catch (e) { showToast('Network error', 'error'); }
+    setSaving(false);
+  };
+
+  const handleAddSchool = async () => {
+    if (!newSchoolName.trim()) return;
+    setSaving(true);
+    try {
+      const res = await apiPost({ action: 'addSchool', schoolName: newSchoolName.trim(), city: newSchoolCity }, adminPassword);
+      if (res?.success) {
+        showToast(`${newSchoolName} added!`, 'success');
+        setNewSchoolName('');
+        onRefresh();
+      } else showToast(res?.error || 'Failed', 'error');
+    } catch (e) { showToast('Network error', 'error'); }
+    setSaving(false);
+  };
+
+  const handleRemoveSchool = async (name) => {
+    if (!confirm(`Remove ${name} and all its sports data?`)) return;
+    setSaving(true);
+    try {
+      const res = await apiPost({ action: 'removeSchool', schoolName: name }, adminPassword);
+      if (res?.success) { showToast(`${name} removed`, 'success'); onRefresh(); }
+      else showToast(res?.error || 'Failed', 'error');
+    } catch (e) { showToast('Network error', 'error'); }
+    setSaving(false);
+  };
+
+  return (
+    <div className="page">
+      <h1 className="page-title">Admin</h1>
+      <p className="page-subtitle">Post updates and manage the school list</p>
+
+      <div className="filter-bar" style={{ marginBottom: 24 }}>
+        <button className={`filter-btn ${tab === 'postUpdate' ? 'active' : ''}`} onClick={() => setTab('postUpdate')}>Post Update</button>
+        <button className={`filter-btn ${tab === 'manageUpdates' ? 'active' : ''}`} onClick={() => setTab('manageUpdates')}>Manage Updates</button>
+        <button className={`filter-btn ${tab === 'schools' ? 'active' : ''}`} onClick={() => setTab('schools')}>Schools</button>
+        <button className={`filter-btn ${tab === 'sportsData' ? 'active' : ''}`} onClick={() => setTab('sportsData')}>Sports Data</button>
+      </div>
+
+      {/* POST UPDATE */}
+      {tab === 'postUpdate' && (
+        <div className="card" style={{ maxWidth: 650 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Post a New Update</h3>
+          <div className="form-group">
+            <label className="form-label">Title</label>
+            <input className="form-input" value={uTitle} onChange={e => setUTitle(e.target.value)}
+              placeholder="e.g. Spring season kicks off in Paterson" />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Content</label>
+            <textarea className="form-textarea" value={uContent} onChange={e => setUContent(e.target.value)}
+              rows={5} placeholder="What's happening..." />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Author</label>
+            <input className="form-input" value={uAuthor} onChange={e => setUAuthor(e.target.value)} />
+          </div>
+          <button className="btn btn-primary" onClick={handlePostUpdate}
+            disabled={saving || !uTitle.trim() || !uContent.trim()}>
+            {saving && <span className="loading-spinner" />} Post Update
+          </button>
+        </div>
+      )}
+
+      {/* MANAGE UPDATES */}
+      {tab === 'manageUpdates' && (
+        <div style={{ maxWidth: 650 }}>
+          {updates.length === 0 ? (
+            <div className="card empty-state"><p>No updates yet.</p></div>
+          ) : updates.map((u, i) => (
+            <div key={u.ID || i} className="card update-item">
+              <div className="update-meta">
+                <span>{formatDate(u.Timestamp)}</span><span>{u.Author}</span>
+              </div>
+              <div className="update-title">{u.Title}</div>
+              <div className="update-content" style={{ maxHeight: 60, overflow: 'hidden' }}>{u.Content}</div>
+              <button className="btn btn-danger btn-sm" style={{ marginTop: 12 }}
+                onClick={() => handleDeleteUpdate(u.ID)} disabled={saving}>Delete</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* MANAGE SCHOOLS */}
+      {tab === 'schools' && (
+        <div className="card" style={{ maxWidth: 650 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Add a School</h3>
+          <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
+            <input className="form-input" value={newSchoolName} onChange={e => setNewSchoolName(e.target.value)}
+              placeholder="School name" style={{ flex: 2 }} />
+            <select className="form-select" value={newSchoolCity} onChange={e => setNewSchoolCity(e.target.value)}
+              style={{ flex: 1 }}>
+              <option>Newark</option><option>Paterson</option><option>Camden</option><option>Miami</option>
+            </select>
+            <button className="btn btn-primary btn-sm" onClick={handleAddSchool}
+              disabled={saving || !newSchoolName.trim()}>Add</button>
+          </div>
+          <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>Current Schools ({schools.length})</h3>
+          {schools.map((s, i) => (
+            <div key={s.Name || i} className="admin-school-row">
+              <div><strong>{s.Name}</strong> <span style={{ color: '#9CA3AF', marginLeft: 8, fontSize: 13 }}>{s.City}</span></div>
+              <button className="btn btn-danger btn-sm" onClick={() => handleRemoveSchool(s.Name)}>Remove</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* VIEW SPORTS DATA */}
+      {tab === 'sportsData' && (
+        <div style={{ maxWidth: 700 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>All Submitted Sports Data</h3>
+          {sportsData.length === 0 ? (
+            <div className="card empty-state"><p>No sports data submitted yet.</p></div>
+          ) : (
+            <div className="card" style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ borderBottom: '2px solid #E5E7EB', textAlign: 'left' }}>
+                    <th style={{ padding: '8px 12px' }}>School</th>
+                    <th style={{ padding: '8px 12px' }}>Sport</th>
+                    <th style={{ padding: '8px 12px' }}>Participants</th>
+                    <th style={{ padding: '8px 12px' }}>Boys%</th>
+                    <th style={{ padding: '8px 12px' }}>Girls%</th>
+                    <th style={{ padding: '8px 12px' }}>Submitted By</th>
+                    <th style={{ padding: '8px 12px' }}>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sportsData.map((sd, i) => (
+                    <tr key={sd.ID || i} style={{ borderBottom: '1px solid #F3F4F6' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: 600 }}>{sd.School}</td>
+                      <td style={{ padding: '8px 12px' }}>{sd.Sport}</td>
+                      <td style={{ padding: '8px 12px' }}>{sd.Participants || '—'}</td>
+                      <td style={{ padding: '8px 12px' }}>{sd.BoysPct ? sd.BoysPct + '%' : '—'}</td>
+                      <td style={{ padding: '8px 12px' }}>{sd.GirlsPct ? sd.GirlsPct + '%' : '—'}</td>
+                      <td style={{ padding: '8px 12px', color: '#9CA3AF' }}>{sd.SubmittedBy || '—'}</td>
+                      <td style={{ padding: '8px 12px', color: '#9CA3AF' }}>{formatDate(sd.Timestamp)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// APP
+// ============================================================
+function App() {
+  const [page, setPage] = useState('overview');
+  const [schools, setSchools] = useState(DEFAULT_SCHOOLS);
+  const [sportsData, setSportsData] = useState([]);
+  const [updates, setUpdates] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [toast, setToast] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const showToast = (message, type) => setToast({ message, type });
+
+  const fetchData = useCallback(async () => {
+    if (!API_URL) return;
+    setLoading(true);
+    try {
+      const [schoolsRes, sportsRes, updatesRes] = await Promise.all([
+        apiGet('getSchools'),
+        apiGet('getSportsData'),
+        apiGet('getUpdates'),
+      ]);
+      if (schoolsRes?.schools?.length) setSchools(schoolsRes.schools);
+      if (sportsRes?.sportsData) setSportsData(sportsRes.sportsData);
+      if (updatesRes?.updates) setUpdates(updatesRes.updates);
+    } catch (e) {
+      showToast('Failed to load data', 'error');
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
+
+  const schoolsWithSports = groupSportsBySchool(schools, sportsData);
+
+  const handleAdminLogin = () => {
+    if (passwordInput.trim()) {
+      setAdminPassword(passwordInput);
+      setIsAdmin(true);
+    }
+  };
+
+  const noApi = !API_URL;
+
+  return (
+    <>
+      <nav className="nav">
+        <div className="nav-inner">
+          <span className="nav-brand" onClick={() => setPage('overview')}>KIPP Sports</span>
+          <div className="nav-links">
+            <button className={`nav-link ${page === 'overview' ? 'active' : ''}`} onClick={() => setPage('overview')}>Overview</button>
+            <button className={`nav-link ${page === 'schools' ? 'active' : ''}`} onClick={() => setPage('schools')}>Schools</button>
+            <button className={`nav-link ${page === 'submit' ? 'active' : ''}`} onClick={() => setPage('submit')}>Submit Data</button>
+            <button className={`nav-link ${page === 'updates' ? 'active' : ''}`} onClick={() => setPage('updates')}>Updates</button>
+          </div>
+          <button className={`nav-admin ${isAdmin ? 'unlocked' : ''}`} onClick={() => setPage('admin')}>
+            Admin
+          </button>
+        </div>
+      </nav>
+
+      {noApi && (
+        <div className="page" style={{ paddingBottom: 0 }}>
+          <div style={{
+            background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 8,
+            padding: '14px 20px', fontSize: 14
+          }}>
+            <strong style={{ color: '#92400E' }}>Setup needed:</strong> Open this HTML file, find <code>API_URL</code> near the top of the script section,
+            and paste your deployed Google Apps Script URL. See the google-apps-script.js file for full instructions.
+          </div>
+        </div>
+      )}
+
+      {page === 'overview' && <OverviewPage schoolsWithSports={schoolsWithSports} updates={updates} />}
+      {page === 'schools' && <SchoolsPage schoolsWithSports={schoolsWithSports} />}
+      {page === 'submit' && <SubmitPage schools={schools} sportsData={sportsData} onRefresh={fetchData} showToast={showToast} />}
+      {page === 'updates' && <UpdatesPage updates={updates} />}
+
+      {page === 'admin' && !isAdmin && (
+        <div className="page">
+          <div className="admin-gate card">
+            <h2 style={{ fontSize: 22 }}>Admin Access</h2>
+            <p>Enter the admin password to manage the sports hub.</p>
+            <div className="form-group">
+              <input className="form-input" type="password" value={passwordInput}
+                onChange={e => setPasswordInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleAdminLogin()}
+                placeholder="Password" style={{ textAlign: 'center' }} />
+            </div>
+            <button className="btn btn-primary" onClick={handleAdminLogin} style={{ width: '100%' }}>Enter</button>
+          </div>
+        </div>
+      )}
+
+      {page === 'admin' && isAdmin && (
+        <AdminPage schools={schools} updates={updates} sportsData={sportsData}
+          adminPassword={adminPassword} onRefresh={fetchData} showToast={showToast} />
+      )}
+
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {loading && <div className="loading-bar" />}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
